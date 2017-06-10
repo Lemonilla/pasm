@@ -1,5 +1,62 @@
 {
-    "0x00":{
-        "Name":"noOp"
+    "0x2C": {
+        "Name": "jmp_equ"
+    },
+    "0x2D": {
+        "Name": "jmpi_equ"
+    },
+    "0x2E": {
+        "Name": "jmp_neq"
+    },
+    "0x2F": {
+        "Name": "jmpi_neq"
+    },
+    "0x30": {
+        "Name": "ujmp_gtr"
+    },
+    "0x31": {
+        "Name": "ujmpi_gtr"
+    },
+    "0x32": {
+        "Name": "jmp_gtr"
+    },
+    "0x33": {
+        "Name": "jmpi_gtr"
+    },
+    "0x34": {
+        "Name": "ujmp_lss"
+    },
+    "0x35": {
+        "Name": "ujmpi_lss"
+    },
+    "0x36": {
+        "Name": "jmp_lss"
+    },
+    "0x37": {
+        "Name": "jmpi_lss"
+    },
+    "0x38": {
+        "Name": "ujmp_geq"
+    },
+    "0x39": {
+        "Name": "ujmpi_geq"
+    },
+    "0x3A": {
+        "Name": "jmp_geq"
+    },
+    "0x3B": {
+        "Name": "jmpi_geq"
+    },
+    "0x3C": {
+        "Name": "ujmp_leq"
+    },
+    "0x3D": {
+        "Name": "ujmpi_leq"
+    },
+    "0x3E": {
+        "Name": "jmp_leq"
+    },
+    "0x3F": {
+        "Name": "jmpi_leq"
     }
 }

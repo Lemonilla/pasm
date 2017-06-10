@@ -3,10 +3,10 @@ var regexs = [
   {regex: /\/\/.*/, token: "comment"},
 
   // Flag
-  {regex: /Fn[0-9]+:/, token: "flag", sol: true},
-  {regex: /Fn_[0-9]+:/, token: "flag", sol: true},
-  {regex: /:[0-9]+/, token: "flag"},
-  {regex: /:\@[a-z|A-Z][a-z|A-Z|0-9|_]*/, token: "flag"},
+  {regex: /Fn[0-9]+:/, token: "flag"},
+  {regex: /Fn_[0-9]+:/, token: "flag"},
+  {regex: /Fn[0-9]+/, token: "flag"},
+  {regex: /Fn_[0-9]+/, token: "flag"},
 
   // Strings
   {regex: /'(?:[^\\]|\\.)*?(?:'|$)/, token: "string"},
