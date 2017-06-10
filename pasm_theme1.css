@@ -1,0 +1,33 @@
+/* pasm theme */
+
+.cm-s-pasm.CodeMirror { background: #272822; color: #F8F8F8; }
+.cm-s-pasm div.CodeMirror-selected { background: #253B76; }
+.cm-s-pasm .CodeMirror-line::selection, 
+.cm-s-pasm .CodeMirror-line > span::selection, 
+.cm-s-pasm .CodeMirror-line > span > span::selection { background: rgba(37, 59, 118, .99); }
+.cm-s-pasm .CodeMirror-line::-moz-selection, 
+.cm-s-pasm .CodeMirror-line > span::-moz-selection, 
+.cm-s-pasm .CodeMirror-line > span > span::-moz-selection { background: rgba(37, 59, 118, .99); }
+.cm-s-pasm .CodeMirror-gutters { background: #272822; border-right: 0; }
+.cm-s-pasm .CodeMirror-guttermarker { color: #FBDE2D; }
+.cm-s-pasm .CodeMirror-guttermarker-subtle { color: #888; }
+.cm-s-pasm .CodeMirror-linenumber { color: #888; }
+.cm-s-pasm .CodeMirror-cursor { border-left: 1px solid #A7A7A7; }
+
+.cm-s-pasm .cm-keyword-1 { color: #FBDE2D; } /* Yellow for V1 */
+.cm-s-pasm .cm-keyword-2 { color: #FBDE2D; } /* Yellow for V2 */
+.cm-s-pasm .cm-keyword-3 { color: #DF2CFA; } /* Purple for GC */
+.cm-s-pasm .cm-keyword-4 { color: #5345E8; } /* Blue for BB */
+.cm-s-pasm .cm-number { color: #31b8ce; } /* lime green 72E268 */
+.cm-s-pasm .cm-variable { color: #FF6400; } /* orange */
+.cm-s-pasm .cm-comment { color: #AEAEAE; } /* gray */
+.cm-s-pasm .cm-string { color: #61CE3C; } /* green */ 
+.cm-s-pasm .cm-flag { color: #e83253; } /* Maroon */
+.cm-s-pasm .cm-error { background: #9D1E15; color: #F8F8F8; }
+
+.cm-s-pasm .CodeMirror-activeline-background { background: #3C3636; }
+.cm-s-pasm .CodeMirror-matchingbracket { outline:1px solid grey;color:white !important; }
+
+#MenuBar{
+	background: #272822;
+}

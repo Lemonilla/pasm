@@ -1,0 +1,43 @@
+<!doctype html>
+
+<title>Script Editor</title>
+<meta charset="utf-8"/>
+<link rel="stylesheet" href="Dependencies/codeMirror/addon/hint/show-hint.css">
+<link rel=stylesheet href="Dependencies/codeMirror/lib/codemirror.css">
+<!--<link rel=stylesheet href="Dependencies/codeMirror/doc/docs.css">-->
+<link rel="stylesheet" href="pasm_theme1.css">
+<link rel="stylesheet" href="css.css">
+<script src="Dependencies/codeMirror/lib/codemirror.js"></script>
+<script src="Dependencies/codeMirror/addon/hint/show-hint.js"></script>
+<script src="Dependencies/codeMirror/addon/hint/anyword-hint.js"></script>
+<script src="Dependencies/codeMirror/mode/javascript/javascript.js"></script>
+<script src="Dependencies/codeMirror/addon/mode/simple.js"></script>
+<script src="Dependencies/codeMirror/addon/display/fullscreen.js"></script>
+<!--<script src="Dependencies/codeMirror/mode/css/css.js"></script>-->
+<script src="opcode-hint.js"></script>
+<script src="opcodes.js"></script>
+<script src="pasm.js"></script>
+<script src="compile.js"></script>
+
+<div id="MenuBar">
+  <div id="Compile"><input id="compile_button" type="button" value="Compile" onclick="compileScript();" /></div>
+  <div id="TitleArea">Script Editor</div>
+</div>
+
+<form><textarea id="code" name="code"></textarea></form>
+
+
+<script>
+  debugger;
+  CodeMirror.commands.autocomplete = function(cm) {
+    cm.showHint({hint: CodeMirror.hint.opcodes});
+  }
+  var editor = CodeMirror.fromTextArea(document.getElementById("code"), {
+    lineNumbers: true,
+    extraKeys: {"Ctrl-Space": "autocomplete"},
+    mode: "pasm",
+    theme: "pasm",
+    fullScreen: true
+  });
+</script>
+
