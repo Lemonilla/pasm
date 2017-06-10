@@ -1,82 +1,112 @@
 /*
 	TODO:
+		Reads comments as unknown opcodes.
+		lineNumber displays 1 line above the actual error
+			(lines start at 0, but numbering starts at 1)
+
+
 
 */
 
-CHAR_TO_REPLACE = [" ","\t"," ",","]
-
-TYPE_ERROR = -1;
-TYPE_FLAG = 0;
-TYPE_OPCODE = 1;
-TYPE_REGISTER = 2;
-TYPE_NUMBER_DECIMAL = 3;
-TYPE_NUMBER_HEX = 4;
-TYPE_COMMENT_SINGLE = 5;
-TYPE_COMMENT_MULTI = 6;
-
 function compileScript(){
-	// tokenize (figure out what it's suppose to be)
-	tokens = tokenize(editor.getValue())
-	// pair arguments with opcodes (& check to make sure they match)
-	// number flags
-	// generate opcodes bit stream
-	// generate flag table
-	// generate file header
+	var fullText = editor.getValue();
+	var goodCompile = false
+	var errorLog = ""
+
+
+	// tokenize code
+	var tokens = tokenize(fullText)
+
+	// check argument syntax
+
+	// Check all jumps for flag existance
+
+	// Build a flag:number table
+
+	// Check version
+
+	// Build script and flag_number:offset table
+
+	// build .bin file
 }
 
-function pairArgFlag(t){
-	flags = []
-	for(i=0; i < t.length; i++){
-		switch(t[i][0]) {
-			case TYPE_FLAG:
-				flags.add(t[i]);
-				continue
-			case TYPE_COMMENT_MULTI:
-			case TYPE_COMMENT_SINGLE:
-				continue
-			case TYPE_ERROR:
-				alert("Error, "+PROGRAM_NAME+" did not recognize "+t[i][1]+" at line "+i)
-				return null;
-			case TYPE_NUMBER_HEX:
+function tokenize(fullText){
+	var tokens = [];
+	// tokens = { opcode[] }
+	// opcode = { Opcode:opcodeJson, Arguments:[args], Flags:[""] }
+	// args = [string:"", type:'']
+
+	var byLine = fullText.split("\n")
+	var flags = []
+
+	for(var i in byLine){
+		var line = byLine[i].trim();
+		var endOfOpcode = line.indexOf(" ")
+		if (endOfOpcode == -1){
+			// we are dealing with a flag
+			// or a zero argument opcode
+			if(line.substring(line.length-1, line.length) == ":"){
+				console.log("flag")
+				flags.push(line.substring(0,line.length-1))
+			} else {
+				console.log("opcode")
+				tokens.push({
+					"Opcode":getOpcodeByName(line),
+					"Arguments":[],
+					"Flags":flags
+				})
+				// empty flags for next opcode
+				flags = []
 				
+			}
+
+		} else {
+			// multi\mono argument opcode
+			var opcode = line.substring(0,endOfOpcode);
+			line = line.substring(endOfOpcode,line.length)
+			
+			if(line.indexOf(",") == -1 && line.indexOf("\"") == -1){
+				// mono argument opcode that doesn't take a string
+				console.log("mono opcode")
+				tokens.push({
+					"Opcode":getOpcodeByName(opcode),
+					"Arguments":[[line,getArgumentType(line)]],
+					"Flags":flags
+				})
+				// empty flags for next opcode
+				flags = []
+
+			}
+
+
 		}
+		console.log(tokens)
 
 	}
 }
 
+// figurs out wtf our string is.
+function getArgumentType(string){
 
+	var register = new RegExp("[R|r]([1-2][0-9][0-9]|[0-9][0-9]|[0-9])")
+	var number1 = new RegExp("0x[0-9|A-F|a-f]+")
+	var number2 = new RegExp("[0-9]+")
+	var floating = new RegExp("-?[0-9]*[\.[0-9]+]?")
+	var string1 = new RegExp("\'(?:[^\\]|\\.)*?(?:\'|$)")  // these two lines are erroring
+	var string2 = new RegExp("\"(?:[^\\]|\\.)*?(?:\"|$)")
 
-
-
-// token looks like : [type, string]
-function tokenize(string){
-	ret = []
-	split = string.split("\n")
-	for (i=0; i< split.length; i++){
-		s = split[i]
-		for (var i = 0; i < CHAR_TO_REPLACE.length; i++) {
-			s = s.replace(CHAR_TO_REPLACE[i],"")
-		};
-		ret.add([getType(s),s])
+	if (register.test(string)){
+		return 'R'
 	}
-	return ret;
-}
-
-function getType(s){
-	if (s.substring(s.length-1,s.length) == ":") return TYPE_FLAG;
-	if (s.substring(0,2) == "\*") return TYPE_COMMENT_MULTI;
-	if (s.substring(0,2) == "//") return TYPE_COMMENT_SINGLE;
-	if (
-		(s.substring(0,1) == "R" || s.substring(0,1) == "r") && 
-		(parseInt(s.substring(1,s.length)) < 256)) 
-			return TYPE_REGISTER;
-	if (
-		(s.substring(0,2) == "0x") &&
-		(parseInt(s.substring(2,s.length)) != NaN ))
-			return TYPE_NUMBER_HEX;
-	if (parseInt(s) != NaN) return TYPE_NUMBER_DECIMAL;
-	if (getOpcodeByName(s) != null) return TYPE_OPCODE;
-
-	return TYPE_ERROR;
-
+	if (number1.test(string) || number2.test(string)){
+		return 'N'
+	}
+	if (floating.test(string)){
+		return 'F'
+	}
+	if (string1.test(string) || string2.test(string)){
+		return 'S'
+	}
+	
+	return 'U'
 }
