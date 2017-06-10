@@ -9,14 +9,12 @@ function getOpcodeByName(string){
 	return null
 }
 
-
 function loadJSON(filePath) {
   // Load json file;
   var json = loadTextFileAjaxSync(filePath, "application/json");
   // Parse json
   return JSON.parse(json);
 }   
-// Load text with Ajax synchronously: takes path to file and optional MIME type
 function loadTextFileAjaxSync(filePath, mimeType)
 {
   var xmlhttp=new XMLHttpRequest();
@@ -37,7 +35,15 @@ function loadTextFileAjaxSync(filePath, mimeType)
   }
 }
 
-
-
-
-var opcodes = loadJSON('opcodes.json')
+// build opcodes list by combining opcodes.json and opcodes.user.json
+// with priority to opcodes.user.json
+// This will allow a user to specialize their own opcode names
+var opcodes = loadJSON('../json/opcodes.default.json')
+var userOpcodes = loadJSON('../json/opcodes.user.json')
+if (userOpcodes !== null){
+    for(var op in userOpcodes) {
+        for (var name in userOpcodes[op]){
+            opcodes[op][name] = userOpcodes[op][name];
+        }
+    }
+}

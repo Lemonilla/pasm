@@ -1,14 +1,17 @@
 .CodeMirror-fullscreen {
   position: fixed;
-  top: 5%; left: 0; right: 0; bottom: 0;
+  top: 45px; left: 0; right: 0; bottom: 0;
   height: auto;
   z-index: 9;
+}
+#code{
+  autocomplete:"on"
 }
 #MenuBar {
   color: #FFFFFF;
   position:fixed;
-  top: 0; left: 2em; right: 0; bottom: 95.25%;
-  height: auto;
+  top: 0; left: 45px; right: 0;
+  height: 40px;
   z-index: 8;
 }
 body{
@@ -22,4 +25,9 @@ body{
   float: right;
   padding-top: .6em;
   padding-right: 1em;
+}
+#icon {
+  padding:0,0,0,0;
+  width: 30px;
+  height:30px;
 }

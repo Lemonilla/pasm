@@ -1,0 +1,56 @@
+<!doctype html>
+
+<title>Script Editor</title>
+<meta charset="utf-8"/>
+
+<link rel="stylesheet" href="../dependencies/codeMirror/addon/hint/show-hint.css">
+<link rel=stylesheet href="../dependencies/codeMirror/lib/codemirror.css">
+<link rel="stylesheet" href="./css/pasm_theme1.css">
+<link rel="stylesheet" href="./css/css.css">
+
+<script src="../dependencies/codeMirror/lib/codemirror.js"></script>
+<script src="../dependencies/codeMirror/addon/hint/show-hint.js"></script>
+<script src="../dependencies/codeMirror/addon/hint/anyword-hint.js"></script>
+<script src="../dependencies/codeMirror/mode/javascript/javascript.js"></script>
+<script src="../dependencies/codeMirror/addon/mode/simple.js"></script>
+<script src="../dependencies/codeMirror/addon/display/fullscreen.js"></script>
+<script src="../dependencies/jquery/jquery-3.2.1.min.js"></script>
+
+<script src="./js/opcode-hint.js"></script>
+<script src="./js/opcodes.js"></script>
+<script src="./js/pasm.js"></script>
+<script src="./js/compile.js"></script>
+
+
+
+
+<img id="icon"></img>
+<div id="MenuBar">
+  <div id="Compile"><input id="compile_button" type="button" value="Compile" onclick="compileScript();" /></div>
+  <div id="TitleArea">Script Editor</div>
+</div>
+
+<form><textarea id="code" name="code"></textarea></form>
+
+
+
+
+<script>
+  // set random icon
+  document.getElementById('icon').src=("./images/icon" +Math.floor(Math.random() * 6 + 1) +".png");
+</script>
+
+<script>
+  // Setup the coding area
+  CodeMirror.commands.autocomplete = function(cm) {
+    cm.showHint({hint: CodeMirror.hint.opcodes});
+  }
+  var editor = CodeMirror.fromTextArea(document.getElementById("code"), {
+    lineNumbers: true,
+    extraKeys: {"Ctrl-Space": "autocomplete"},
+    mode: "pasm",
+    theme: "pasm",
+    fullScreen: true
+  });
+</script>
+
