@@ -3,6 +3,7 @@ var regexs = [
   {regex: /\/\/.*/, token: "comment"},
 
   // Flag
+  { regex: /F[0-9]+/, token: "flag", sol: true },
   {regex: /Fn[0-9]+:/, token: "flag", sol: true},
   {regex: /Fn_[0-9]+:/, token: "flag", sol: true},
   {regex: /:[0-9]+/, token: "flag"},
