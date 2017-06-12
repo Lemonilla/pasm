@@ -26,6 +26,11 @@ body{
   padding-top: .6em;
   padding-right: 1em;
 }
+#Upload {
+  float: right;
+  padding-top: .6em;
+  padding-right: 1em;
+}
 #icon {
   padding:0,0,0,0;
   width: 30px;

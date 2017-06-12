@@ -20,13 +20,18 @@
 <script src="./js/opcodes.js"></script>
 <script src="./js/pasm.js"></script>
 <script src="./js/compile.js"></script>
-
+<script src="./js/upload.js"></script>
 
 
 
 <img id="icon"></img>
 <div id="MenuBar">
   <div id="Compile"><input id="compile_button" type="button" value="Compile" onclick="compileScript();" /></div>
+  <div id="Upload">
+    <label>Upload</label>
+    <input type="file" id="fileToLoad" onchange="loadFileAsText()">
+  </div>
+
   <div id="TitleArea">Script Editor</div>
 </div>
 
