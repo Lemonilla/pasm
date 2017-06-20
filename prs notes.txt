@@ -1,0 +1,13 @@
+prs notes
+
+Bit Patterns:
+    1 0xA                   => Copy 0xA to decompressed                           // raw copy
+
+    00nn 0xA                => copy n + 2 bytes from A + currentLocation          // short searh
+
+    01 0xA 0xB 0xC
+        A | B == 0          => EOF                                                // end of file
+        A & 0x07 == 0x07    => copy (C + 1) from (B << 5) | (A >> 3)              // long search big
+        A & 0x07 != 0x07    => copy (A & 0x07 + 2) bytes from (B << 5) | (A >> 3) // long search small
+
+

@@ -2330,7 +2330,7 @@
 	},
 	"0xF883": {
 		"Value": "F883",
-		"Name": "0xF883",
+		"Name": "players_in_range",
 		"Parameters": "RR",
 		"Version": 2
 	},
