@@ -127,6 +127,13 @@ function PRS_Decompress(b){
         return dv.getUint8(0,true)
     }
 
+    function read_u16(){ 
+        read_slice = array.slice(array_index, array_index+2)
+        dv = new DataView(read_slice)
+        array_index+=2
+        return dv.getUint16(0,true)
+    }
+
     function readFlagBit(){
         if (flagByte_index === 0x00 || flagByte_index > 0xA000) {
            // console.log("reset flag bit")
@@ -147,6 +154,7 @@ function PRS_Decompress(b){
     while(true){
        // console.log("index :"+array_index)
 
+        // we did an operation, so clear our operation thingy
         if (flag) flagByte_code = 0x00
         flag = false
 
@@ -158,22 +166,27 @@ function PRS_Decompress(b){
         } else {
             if (readFlagBit()){
                 // long copies
-                byteA = read_u8();
-                byteB = read_u8();
-                offset = (byteB << 5)|(byteA >> 3)
-                code = byteA & 0x07
+                offset = read_u16();
+                code = offset & 0x07
 
                 // EOF - exit and return
-                if ((byteA === 0x00) && (byteB === 0x00)) {
+                if (!offset) {
                     console.log("done decompressing")
                     return new Uint8Array(end).buffer;
                 }
 
+                offset >>>= 3
+                offset -= 8192;
+
                 // long big copy
-                if (code === 0x07) code = read_u8()
+                if (code === 0x00) {
+                    code = read_u8() + 1
+                } else {
+                    code += 2
+                }
 
                 // big copy
-                for (var x = 0; x < code; x++) end[end.length] = read_u8(offset,false)
+                for (var x = 0; x < code; x++) end[end.length] = read_u8(offset+x,false)
 
                 flag = true;
             } else {
@@ -192,7 +205,7 @@ function PRS_Decompress(b){
 // takes an ArrayBuffer of decoded .bin file
 // and sets all the HTML elements to the values contained
 function BIN_Process(bin){
-    console.log(new Uint32Array(bin.slice(0,320)))
+    console.log(new Uint8Array(bin))
     index = 0
 
     function read_u8(){ 
