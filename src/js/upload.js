@@ -1,10 +1,10 @@
 function loadFileAsText(file){
-    var fileToLoad = document.getElementById(file).files[0];
+    var fileToLoad = document.getElementById("fileToLoad").files[0];
         var fileReader = new FileReader();
     fileReader.onload = function(fileLoadedEvent){
-        let fileClass = new FileStream(fileLoadedEvent.target.result)
         // Jump to function that does all the work from here
-        readHeader(fileClass)
+        qstObj = QST_Unpack(fileLoadedEvent.target.result)
+        BIN_Process(qstObj["bin"]);
     }
     fileReader.readAsArrayBuffer(fileToLoad);
 }
@@ -16,66 +16,84 @@ function loadFileAsText(file){
 //  dat: ArrayBuffer (decoded)
 // }
 function QST_Unpack(qst){
+    console.log("unpacking qst file")
     index = 0
-    ret = {}
-    ret["dat"] = new Uint8Array();
-    ret["bin"] = new Uint8Array();
+    obj = {
+        "dat": [],
+        "bin": []
+    }
 
     function read_u(s){ 
-        dv = new DataView(array.slice(index, index+s)) 
-        index+=1
+        read_slice = qst.slice(index, index+(s/8))
+        dv = new DataView(read_slice) 
+        index+=(s/8)
 
         ret = dv.getUint8(0,true)
         if (s == 16) ret = dv.getUint16(0,true)
         if (s == 32) ret = dv.getUint32(0,true)
+        if (s == 1024) ret = new Uint8Array(read_slice)
 
         return ret
     }
 
-    while(index < qst.length){
-        // 0x041c = data
-        // 0x0088 = header
+
+
+    while(index < qst.byteLength){
+        // 0x041c = data = 1052
+        // 0x0088 = header = 88
         check = read_u(16)
-        if (check === 0x0088 && !ret["number"]) {
+        if (check === 0x0058) {
+            console.log("reading header")
             // Header section
             index += 2 // skip 0x0044 bytes
             index += 2 // skip quest number (it's in .bin)
             index += 38 // skip unknown values
             index += 16 // skip filename
-            fsize += 4 // skip filesize
+            index += 4 // skip filesize
             index += 24 // skip jfilename
         } else {
+            console.log("reading message")
             // data section
             index += 2 // skip 0x0013 bytes
             chunkNumber = read_u(8)
             index += 3 // skip 0x000000
             file = ""
-            for (var x = 0; x < 16; x++){
+            for (var x = 0; x < 15; x++){
                 c = read_u(8)
-                if (char(c) === ".") {
+                if (String.fromCharCode(c) === ".") {
                     c = read_u(8)
-                    if (char(c) === "b") file = "bin"
-                    if (char(c) === "d") file = "dat"
+                    if (String.fromCharCode(c) === "b") file = "bin"
+                    if (String.fromCharCode(c) === "d") file = "dat"
                     if (file === "") {
                         alert("Bad Data Header in file with chunkNumber "+chunkNumber)
                         return null
                     }
                 }
             }
-            data = read_u(1024)
+
+
+            data = new Uint8Array(qst.slice(index, index+(1024)))
+            index+=1024 // multiply it by 8 since we're doing bytes and the read_u takes bits
             size = read_u(32)
+            if (size > 1024) {
+                alert("ERROR, Size exceeded window")
+                return null
+            }
             for( var v = 0; v < size; v++){
-                if (file === "bin") ret["bin"][ret["bin"].length] = data[v]
-                if (file === "dat") ret["dat"][ret["dat"].length] = data[v]
+                if (file === "bin") obj["bin"][obj["bin"].length] = data[v]
+                if (file === "dat") obj["dat"][obj["dat"].length] = data[v]
+               // console.log(data)
             }
             index+=4 // skip footer
         }
     }
 
+    console.log("done unpacking qst file")
+
     // unpack
-    ret["dat"] = PRS_Decompress(ret["dat"])
-    ret["bin"] = PRS_Decompress(ret["bin"])
-    return ret
+    obj["dat"] = PRS_Decompress(new Uint8Array(obj["dat"]).buffer)
+    obj["bin"] = PRS_Decompress(new Uint8Array(obj["bin"]).buffer)
+    return obj
 }
 
 /*
@@ -92,9 +110,10 @@ if FFF == 7 copy C+1 from (B << 5)|(A >> 3)
 // takes a prs compressed ArrayBuffer
 // returns a decompressed ArrayBuffer
 function PRS_Decompress(b){
+    console.log("decompressing a file")
     array = b
     array_index = 0
-    end = new Uint8Array()
+    end = []
     loop = 0
 
     flagByte = 0x00
@@ -102,27 +121,31 @@ function PRS_Decompress(b){
     flagByte_code = 0x00
 
     function read_u8(i = 0, advance = true){ 
-        ret = new DataView(array.slice(i+array_index, i+array_index+1)).getUint8(0,true) 
+        read_slice = array.slice(array_index, array_index+1)
+        dv = new DataView(read_slice)  
         if (advance) array_index+=1
-        return ret
+        return dv.getUint8(0,true)
     }
 
     function readFlagBit(){
-        if (flagByte_index === 0x00) {
+        if (flagByte_index === 0x00 || flagByte_index > 0xA000) {
+           // console.log("reset flag bit")
             flagByte = read_u8()
+         //   console.log(flagByte.toString(16))
             flagByte_index = 0x01
         }
         flagByte_code ^= (flagByte & flagByte_index)
-        flagByte_index <<< 1
-        if (ret) return 1
+        
+      //  console.log(flagByte_code.toString(16))
+        flagByte_index = flagByte_index << 2
+        if (flagByte_code) return 1
         return 0;
     }
 
-    function clearFlagByte(){
-        flagByte = 0x00
-    }
 
-    while(++loop){
+    var flag=false
+    while(true){
+       // console.log("index :"+array_index)
 
         if (flag) flagByte_code = 0x00
         flag = false
@@ -141,7 +164,10 @@ function PRS_Decompress(b){
                 code = byteA & 0x07
 
                 // EOF - exit and return
-                if ((byteA === 0x00) && (byteB === 0x00)) return end.buffer;
+                if ((byteA === 0x00) && (byteB === 0x00)) {
+                    console.log("done decompressing")
+                    return new Uint8Array(end).buffer;
+                }
 
                 // long big copy
                 if (code === 0x07) code = read_u8()
@@ -152,12 +178,10 @@ function PRS_Decompress(b){
                 flag = true;
             } else {
                 // short copy
-                clearFlagByte();
-                readFlagBit()
-                readFlagBit()
-                while (FlagByte_code){
+                si = readFlagBit()*2 + readFlagBit()
+                while (si){
                     end[end.length] = read_u8()
-                    FlagByte_code -= 1
+                    si -= 1
                 }
                 flag = true
             }
@@ -168,6 +192,7 @@ function PRS_Decompress(b){
 // takes an ArrayBuffer of decoded .bin file
 // and sets all the HTML elements to the values contained
 function BIN_Process(bin){
+    console.log(new Uint32Array(bin.slice(0,320)))
     index = 0
 
     function read_u8(){ 
@@ -192,8 +217,8 @@ function BIN_Process(bin){
         ret = ""
         for( var a = 0; a < size; a++){
             c = read_u16()
-            if (c !== 0x00) {
-                ret += char(c)
+            if (c !== 0x0000) {
+                ret += String.fromCharCode(c)
             }
         }
         return ret
@@ -225,10 +250,23 @@ function BIN_Process(bin){
         index += 4 // padding
     }
 
+    console.log("-------")
+    console.log((new DataView(array.slice(12,16)).getUint32(0,true)).toString(16))
+    console.log(obj_code_offset)
+    console.log(fnc_code_offset)
+    console.log(bin_size)
+    console.log(language)
+    console.log(quest_number)
+    console.log(quest_name)
+    console.log(short_description)
+    console.log(long_description)
+
+    return;
+
     flag_list = {}
-    for(var funcNum=0; index < fnc_code_offset; funcNum++)
+    for(var funcNum=0; index < fnc_code_offset; funcNum++){
         i = read_u32()
-        flag_list.add(i:funcNum)
+        flag_list[i] = funcNum
     }
 
     // loop over filebuffer:
@@ -241,12 +279,12 @@ function BIN_Process(bin){
     opList = []
     while(index < bin.length){
         op = read_u8()
-        if (op === 0xF8 || op === 0xF9) op = op <<< 8 + read_u8()
+        if (op === 0xF8 || op === 0xF9) op = op << 8 + read_u8()
         opObj = {
-            Flags=null,
-            Name=opcodes[op.toString(16)].Name, 
-            Eparam = opcodes[op.toString(16)].Parameters.split('')
-            Aparam = null
+            "Flags":null,
+            "Name":opcodes[op.toString(16)].Name, 
+            "Eparam" : opcodes[op.toString(16)].Parameters.split(''),
+            "Aparam" : null
         }
         ////// Eparam Codes  *check for accuracy  ~not implemented
         // p        Push onto stack
@@ -265,7 +303,7 @@ function BIN_Process(bin){
         // Z        ~Function Location (u16?)
         for (var x in Eparam){
             if (x === 'a') break;
-            if (x === 'p') 
+
         }
     }
 

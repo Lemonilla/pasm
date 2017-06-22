@@ -4,7 +4,7 @@
 <meta charset="utf-8"/>
 
 <link rel="stylesheet" href="../dependencies/codeMirror/addon/hint/show-hint.css">
-<link rel=stylesheet href="../dependencies/codeMirror/lib/codemirror.css">
+<link rel="stylesheet" href="../dependencies/codeMirror/lib/codemirror.css">
 <link rel="stylesheet" href="./css/pasm_theme1.css">
 <link rel="stylesheet" href="./css/css.css">
 
@@ -16,20 +16,21 @@
 <script src="../dependencies/codeMirror/addon/display/fullscreen.js"></script>
 <script src="../dependencies/jquery/jquery-3.2.1.min.js"></script>
 
-<script src="./js/navbar.js"></script>
+<script src="./js/navBar.js"></script>
 <script src="./js/opcode-hint.js"></script>
 <script src="./js/opcodes.js"></script>
 <script src="./js/pasm.js"></script>
+<script src="./js/none.js"></script>
 <script src="./js/compile.js"></script>
 <script src="./js/upload.js"></script>
 
 
 <div id="mySidenav" class="sidenav">
   <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
-  <a onclick="#" href="#">Quest Name</a>
-  <a onclick="#" href="#">Short Description</a>
-  <a onclick="#" href="#">Long Description</a>
-  <a onclick="Nav_gotoCode()" href="#">PASM Code</a>
+  <a onclick='Nav_goto("name")' href="#">Quest Name</a>
+  <a onclick='Nav_goto("shrt")' href="#">Short Description</a>
+  <a onclick='Nav_goto("long")' href="#">Long Description</a>
+  <a onclick='Nav_goto("code")' href="#">PASM Code</a>
 </div>
 
 <div id="main">
@@ -37,9 +38,9 @@
   <img id="icon" onclick="openNav()"></img>
 
   <div id="MenuBar">
-    <div id="Compile"><input id="compile_button" type="button" value="Compile" onclick="compileScript();" /></div>
+    <div id="Compile"><input id="compile_button" type="button" value="Save" onclick="compileScript();" /></div>
     <div id="Upload">
-      <label>Upload</label>
+      <label>Open</label>
       <input type="file" id="fileToLoad" onchange="loadFileAsText()">
     </div>
 
@@ -47,10 +48,13 @@
   </div>
 
 
-  <form><textarea id="code" name="code"></textarea></form>
+  <form>
+    <textarea id="code" name="code"></textarea>
+    <textarea id="name" name="name"></textarea>
+    <textarea id="shrt" name="shrt"></textarea>
+    <textarea id="long" name="long"></textarea>
+  </form>
 </div>
-
-
 
 
 
@@ -59,10 +63,7 @@
 <script>
   // setup page on load
   document.getElementById('icon').src=("./images/icon" +Math.floor(Math.random() * 6 + 1) +".png");
-  document.getElementById("currentPage").innerHTML = " / PASM Code"
-</script>
 
-<script>
   // Setup the coding area
   CodeMirror.commands.autocomplete = function(cm) {
     cm.showHint({hint: CodeMirror.hint.opcodes});
@@ -74,5 +75,31 @@
     theme: "pasm",
     fullScreen: true
   });
+  var nameField = CodeMirror.fromTextArea(document.getElementById("name"), {
+    lineNumbers: true,
+    theme: "pasm",
+    mode: "none",
+    fullScreen: true
+  });
+  var longField = CodeMirror.fromTextArea(document.getElementById("long"), {
+    lineNumbers: true,
+    theme: "pasm",
+    mode: "none",
+    fullScreen: true
+  });
+  var shrtField = CodeMirror.fromTextArea(document.getElementById("shrt"), {
+    lineNumbers: true,
+    theme: "pasm",
+    mode: "none",
+    fullScreen: true
+  });
+
+  // hide all the boxes and make sure everything works
+  var active_element = document.getElementById("name")
+  Nav_goto("code")
+  Nav_goto("shrt")
+  Nav_goto("long")
+  Nav_goto("name")
+  
 </script>
 
