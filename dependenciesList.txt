@@ -1,0 +1,4 @@
+codeMirror - https://codemirror.net/
+FileSaver.js - https://github.com/eligrey/FileSaver.js/
+jquery
+Blob - https://github.com/eligrey/Blob.js/

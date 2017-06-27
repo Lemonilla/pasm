@@ -71,12 +71,14 @@ function QST_Unpack(qst){
                 }
             }
 
-
             data = new Uint8Array(qst.slice(index, index+(1024)))
             index+=1024 // multiply it by 8 since we're doing bytes and the read_u takes bits
+         //   data = new Uint8Array(qst.slice(index, index+(128)))
+         //  index+=128
             size = read_u(32)
             if (size > 1024) {
                 alert("ERROR, Size exceeded window")
+                console.log("size = "+size.toString(16))
                 return null
             }
             for( var v = 0; v < size; v++){
@@ -90,8 +92,12 @@ function QST_Unpack(qst){
 
     console.log("done unpacking qst file")
 
+
+    
+
+
     // unpack
-    obj["dat"] = PRS_Decompress(new Uint8Array(obj["dat"]).buffer)
+ //   obj["dat"] = PRS_Decompress(new Uint8Array(obj["dat"]).buffer)
     obj["bin"] = PRS_Decompress(new Uint8Array(obj["bin"]).buffer)
     return obj
 }
@@ -134,35 +140,30 @@ function PRS_Decompress(b){
         return dv.getUint16(0,true)
     }
 
+    function offset_copy(offset, length){
+        // copy length bytes from offset bytes
+        for (var x = 0; x < length; x++) end[end.length] = read_u8(offset+x+index,false)
+    }
+
     function readFlagBit(){
         if (flagByte_index === 0x00 || flagByte_index > 0xA000) {
-           // console.log("reset flag bit")
             flagByte = read_u8()
-         //   console.log(flagByte.toString(16))
             flagByte_index = 0x01
         }
         flagByte_code ^= (flagByte & flagByte_index)
-        
-      //  console.log(flagByte_code.toString(16))
         flagByte_index = flagByte_index << 2
         if (flagByte_code) return 1
         return 0;
     }
 
 
-    var flag=false
     while(true){
        // console.log("index :"+array_index)
 
-        // we did an operation, so clear our operation thingy
-        if (flag) flagByte_code = 0x00
-        flag = false
-
-
         if (readFlagBit()) {
             // raw copy code here
+            console.log("Raw Copy")
             end[end.length] = read_u8()
-            flag = true;
         } else {
             if (readFlagBit()){
                 // long copies
@@ -172,6 +173,8 @@ function PRS_Decompress(b){
                 // EOF - exit and return
                 if (!offset) {
                     console.log("done decompressing")
+
+                    saveAs(new Blob([new Uint8Array(end).buffer]),"filePRS.bin")
                     return new Uint8Array(end).buffer;
                 }
 
@@ -180,23 +183,22 @@ function PRS_Decompress(b){
 
                 // long big copy
                 if (code === 0x00) {
+                    console.log("long Big Copy")
                     code = read_u8() + 1
                 } else {
+                    console.log("long small copy")
                     code += 2
                 }
 
                 // big copy
-                for (var x = 0; x < code; x++) end[end.length] = read_u8(offset+x,false)
+                offset_copy(offset,code)
 
-                flag = true;
             } else {
+                console.log("Short Copy")
                 // short copy
-                si = readFlagBit()*2 + readFlagBit()
-                while (si){
-                    end[end.length] = read_u8()
-                    si -= 1
-                }
-                flag = true
+                si = readFlagBit()*2 + readFlagBit() + 2
+                off = read_u8() - 256
+                offset_copy(off,si)
             }
         }
     }
