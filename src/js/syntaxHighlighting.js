@@ -1,3 +1,14 @@
+// No coloring
+var regexs = []
+
+// apply the checks
+CodeMirror.defineSimpleMode("none", {
+  start: regexs
+});
+
+
+
+// PASM Coloring
 var regexs = [
    // 1 line Comment
   {regex: /\/\/.*/, token: "comment"},

@@ -179,7 +179,7 @@ function PRS_Decompress(b){
                 }
 
                 offset >>>= 3
-                offset -= 8192;
+                offset -= 8192; // make it signed
 
                 // long big copy
                 if (code === 0x00) {

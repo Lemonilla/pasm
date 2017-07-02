@@ -9,7 +9,7 @@ function getOpcodeByName(string){
 			return opcodes[i]
 		}
 	}
-	console.log("Error, could not fine opcode \""+string+"\".")
+//	console.log("Error, could not fine opcode \""+string+"\".")
 	return null
 }
 
