@@ -1,22 +1,26 @@
+NAVBARSTATE = 1;
 
-function openNav() {
-    document.getElementById("mySidenav").style.width = "200px";
-    document.getElementById("main").style.marginLeft = "200px";
-    document.getElementById("MenuBar").style.marginLeft = "200px";
-    document.getElementsByClassName("CodeMirror")[0].style.marginLeft = "200px"
-    document.getElementsByClassName("CodeMirror")[1].style.marginLeft = "200px"
-    document.getElementsByClassName("CodeMirror")[2].style.marginLeft = "200px"
-    document.getElementsByClassName("CodeMirror")[3].style.marginLeft = "200px"
-}
-
-function closeNav() {
-    document.getElementById("mySidenav").style.width = "0";
-    document.getElementById("main").style.marginLeft= "0";
-    document.getElementById("MenuBar").style.marginLeft = "0px";
-    document.getElementsByClassName("CodeMirror")[0].style.marginLeft = "0px"
-    document.getElementsByClassName("CodeMirror")[1].style.marginLeft = "0px"
-    document.getElementsByClassName("CodeMirror")[2].style.marginLeft = "0px"
-    document.getElementsByClassName("CodeMirror")[3].style.marginLeft = "0px"
+function toggleNav() {
+    console.log(NAVBARSTATE)
+    if (NAVBARSTATE == 0) {
+        NAVBARSTATE = 1;
+        document.getElementById("mySidenav").style.width = "200px";
+        document.getElementById("main").style.marginLeft = "0px";
+        document.getElementById("MenuBar").style.marginLeft = "150px";
+        document.getElementsByClassName("CodeMirror")[0].style.marginLeft = "200px"
+        document.getElementsByClassName("CodeMirror")[1].style.marginLeft = "200px"
+        document.getElementsByClassName("CodeMirror")[2].style.marginLeft = "200px"
+        document.getElementsByClassName("CodeMirror")[3].style.marginLeft = "200px"
+    } else {
+        NAVBARSTATE = 0;
+        document.getElementById("mySidenav").style.width = "0";
+        document.getElementById("main").style.marginLeft= "0";
+        document.getElementById("MenuBar").style.marginLeft = "0px";
+        document.getElementsByClassName("CodeMirror")[0].style.marginLeft = "0px"
+        document.getElementsByClassName("CodeMirror")[1].style.marginLeft = "0px"
+        document.getElementsByClassName("CodeMirror")[2].style.marginLeft = "0px"
+        document.getElementsByClassName("CodeMirror")[3].style.marginLeft = "0px"
+    }
 }
 
 function Nav_goto(id){

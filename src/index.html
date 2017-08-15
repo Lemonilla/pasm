@@ -25,10 +25,12 @@
 <script src="./js/compile.js"></script>
 <script src="./js/upload.js"></script>
 <script src="./js/tokenize.js"></script>
+<script src="./js/prs/ArrayBufferCursor.js"></script>
+<script src="./js/prs/compress.js"></script>
+<script src="./js/prs/decompress.js"></script>
 
 
 <div id="mySidenav" class="sidenav">
-  <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
   <a onclick='Nav_goto("name")' href="#">Quest Name</a>
   <a onclick='Nav_goto("shrt")' href="#">Short Description</a>
   <a onclick='Nav_goto("long")' href="#">Long Description</a>
@@ -37,7 +39,7 @@
 
 <div id="main">
 
-  <img id="icon" onclick="openNav()"></img>
+  <img id="icon" onclick="toggleNav()"></img>
 
   <div id="MenuBar">
     <div id="Compile"><input id="compile_button" type="button" value="Save" onclick="compileScript();" /></div>

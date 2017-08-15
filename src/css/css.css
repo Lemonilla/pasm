@@ -45,6 +45,8 @@ body{
   padding:-20,-20,0,0;
   width: 30px;
   height:30px;
+  z-index: 11;
+  position:fixed;
 }
 
 .sidenav {

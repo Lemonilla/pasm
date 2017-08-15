@@ -98,7 +98,10 @@ function QST_Unpack(qst){
 
     // unpack
  //   obj["dat"] = PRS_Decompress(new Uint8Array(obj["dat"]).buffer)
-    obj["bin"] = PRS_Decompress(new Uint8Array(obj["bin"]).buffer)
+    //obj["bin"] = PRS_Decompress(new Uint8Array(obj["bin"]).buffer)
+    console.log(new Uint8Array(obj["bin"]))
+    obj["bin"] = decompress(new ArrayBufferCursor(new Uint8Array(obj["bin"]).buffer),true)
+    console.log("made it out of decompress")
     return obj
 }
 
